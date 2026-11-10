@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101522">
+<title>Kanto Clash</title>
+<style>
+:root{color-scheme:dark;--bg:#101522;--panel:#1a2333;--panel2:#222e41;--line:#34435b;--gold:#ffc85a;--muted:#9eabc0;--red:#ff7777;--blue:#72c8ff;--green:#80e0ac}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:#f4f6fb;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{height:100dvh;max-width:1000px;margin:auto;padding:clamp(7px,1.4vh,14px);display:flex;flex-direction:column;gap:clamp(5px,1vh,10px);min-height:0}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
+.brand{font-weight:950;letter-spacing:.09em;font-size:clamp(15px,3vw,22px)}.brand span{color:var(--gold)}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 10px;color:var(--muted);font-size:11px;font-weight:750}
+.stats{display:flex;gap:6px;align-items:center}.stats .pill strong{color:#fff;font-size:13px;margin-left:3px}
+.status{display:flex;justify-content:space-between;align-items:center;gap:8px;flex:none}.status h1{font-size:clamp(13px,2.4vw,17px);margin:0}.status p{font-size:10px;color:var(--muted);margin:2px 0 0}
+#message{font-size:11px;color:var(--gold);text-align:right;max-width:52%;min-height:14px}
+.arenas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;flex:1;min-height:0}
+.arena{border:1px solid var(--line);background:linear-gradient(160deg,#202b3d,#171f2e);border-radius:14px;padding:7px;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;overflow:hidden}
+.arena.winner{border-color:var(--green);box-shadow:inset 0 0 0 1px #80e0ac55}.arena h2{font-size:clamp(10px,2vw,13px);margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arena .desc{font-size:9px;color:var(--muted);min-height:22px;line-height:1.2}
+.score{display:flex;justify-content:space-between;align-items:center;margin:4px 0 6px;font-weight:900;font-size:clamp(15px,3vw,21px)}.score small{font-size:9px;color:var(--muted);font-weight:700}
+.slots{display:flex;flex-direction:column;gap:5px;flex:1;min-height:0}
+.slot{background:#11192799;border:1px dashed #45536a;border-radius:9px;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;overflow:hidden}
+.slot.filled{border-style:solid;border-color:#53657f;background:#253248}
+.mon{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;min-width:0}
+.mon img{width:clamp(36px,8vw,66px);height:clamp(36px,8vw,66px);object-fit:contain;filter:drop-shadow(0 3px 5px #0008)}
+.mon b{font-size:clamp(9px,1.8vw,12px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mon small{font-size:9px;color:var(--gold);line-height:1.15}
+.empty{font-size:9px;color:#75839a}
+.opponent{color:var(--red)}.you{color:var(--blue)}
+.bottom{display:flex;flex-direction:column;gap:6px;flex:none}
+.handtop{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}.handtop strong{color:#fff}
+.hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;min-height:0}
+.card{background:linear-gradient(155deg,#28364c,#1b2638);border:1px solid #455873;border-radius:12px;padding:5px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;overflow:hidden;min-height:clamp(104px,17vh,145px);color:white}
+.card:disabled{opacity:.42;filter:grayscale(.5)}.card.selected{border:2px solid var(--gold);background:#3a3540}
+.card img{width:clamp(45px,10vw,78px);height:clamp(45px,10vw,78px);object-fit:contain}
+.card b{font-size:clamp(10px,2vw,13px)}.card small{font-size:9px;color:#bdc9da;text-align:center;line-height:1.15}
+.cost{position:absolute;top:5px;left:5px;background:#4b8bc3;border-radius:50%;width:20px;height:20px;display:grid;place-items:center;font-size:11px;font-weight:900}
+.actions{display:flex;align-items:center;gap:7px}.actions button{border:0;border-radius:10px;padding:11px 12px;font-weight:850;font-size:12px}
+#play{background:var(--gold);color:#222;flex:1}#end{background:#34445d;color:white;flex:1}#restart{background:transparent;border:1px solid var(--line);color:var(--muted)}
+button:disabled{opacity:.35}
+.overlay{position:fixed;inset:0;background:#070b13dd;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}.dialog{max-width:360px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center}.dialog h2{margin:0 0 8px}.dialog p{color:var(--muted);font-size:13px;line-height:1.45}.dialog button{background:var(--gold);border:0;border-radius:10px;padding:12px 20px;font-weight:900}
+#hint{font-size:9px;color:#75839a;text-align:center}
+@media (max-height:650px){#app{gap:5px;padding:5px}.arena{padding:5px}.arena .desc{min-height:15px}.card{min-height:88px}.card img{height:43px;width:43px}.mon img{height:34px;width:34px}.bottom{gap:4px}.actions button{padding:9px}}
+@media (min-width:700px){#app{padding:14px}.arena{padding:12px}.slot{min-height:110px}.card{min-height:160px}.card img{width:90px;height:90px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div class="brand">KANTO <span>CLASH</span></div><div class="stats"><div class="pill">TURNO <strong id="turn">1/6</strong></div><div class="pill">ENERGIA <strong id="energy">1</strong></div></div></header>
+<div class="status"><div><h1>Conquista le arene</h1><p>Vinci almeno 2 arene su 3 entro il sesto turno.</p></div><div id="message">Scegli una carta dalla mano.</div></div>
+<main class="arenas" id="arenas"></main>
+<section class="bottom">
+<div class="handtop"><span>LA TUA MANO</span><span><strong id="handcount">3</strong> carte</span></div>
+<div class="hand" id="hand"></div>
+<div class="actions"><button id="play" disabled>Gioca carta</button><button id="end">Fine turno</button><button id="restart" aria-label="Nuova partita">↻</button></div>
+<div id="hint">Seleziona una carta, poi tocca l’arena in cui vuoi giocarla.</div>
+</section>
+</div>
+<div class="overlay" id="overlay"><div class="dialog"><h2 id="resultTitle"></h2><p id="resultText"></p><button onclick="newGame()">Nuova partita</button></div></div>
+<script>
+const art=n=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
+const cards=[
+{id:'charmander',name:'Charmander',dex:4,cost:1,power:2,desc:'Fiamma iniziale: +1 potenza se è la tua prima carta nell’arena.',stage:1},
+{id:'charmeleon',name:'Charmeleon',dex:5,cost:3,power:5,desc:'Evoluzione: +2 potenza se hai Charmander nella stessa arena.',stage:2,evolves:'charmander'},
+{id:'charizard',name:'Charizard',dex:6,cost:5,power:9,desc:'Drago fiammeggiante: +3 potenza se evolve da Charmeleon.',stage:3,evolves:'charmeleon'}
+];
+const arenasData=[{name:'Prato Smeraldo',desc:'La natura protegge i più deboli.'},{name:'Grotta Rocciosa',desc:'Qui conta la forza pura.'},{name:'Vetta Vulcanica',desc:'Il fuoco domina la vetta.'}];
+let state;
+function newGame(){state={turn:1,energy:1,selected:null,player:[[],[],[]],cpu:[[],[],[]],hand:['charmander','charmander','charmander'],done:false};document.getElementById('overlay').style.display='none';render();say('Scegli una carta e poi un’arena.');}
+function getCard(id){return cards.find(c=>c.id===id)}
+function power(c,side,lane){let p=c.power;const team=state[side][lane];if(c.id==='charmander'&&team.length===0)p+=1;if(c.id==='charmeleon'&&team.some(x=>x.id==='charmander'))p+=2;if(c.id==='charizard'&&team.some(x=>x.id==='charmeleon'))p+=3;if(arenasData[lane].name==='Vetta Vulcanica'&&c.id.includes('char'))p+=1;return p}
+function score(side,lane){return state[side][lane].reduce((s,c)=>s+power(c,side,lane),0)}
+function say(t){document.getElementById('message').textContent=t}
+function render(){
+ document.getElementById('turn').textContent=state.turn+'/6';document.getElementById('energy').textContent=state.energy;document.getElementById('handcount').textContent=state.hand.length;
+ document.getElementById('arenas').innerHTML=arenasData.map((a,i)=>{let ps=score('player',i),cs=score('cpu',i);return `<section class="arena ${ps>cs?'winner':''}" data-lane="${i}"><h2>${a.name}</h2><div class="desc">${a.desc}</div><div class="score"><span class="you">${ps}</span><small>VS</small><span class="opponent">${cs}</span></div><div class="slots">${slotHTML('cpu',i)}${slotHTML('player',i)}</div></section>`}).join('');
+ document.querySelectorAll('.arena').forEach(el=>el.addEventListener('click',()=>playSelected(+el.dataset.lane)));
+ document.getElementById('hand').innerHTML=state.hand.map((id,i)=>{let c=getCard(id);return `<button class="card ${state.selected===i?'selected':''}" data-index="${i}" ${state.done?'disabled':''}><span class="cost">${c.cost}</span><img src="${art(c.dex)}" alt="${c.name}"><b>${c.name}</b><small>${c.power} potenza · ${c.desc}</small></button>`}).join('');
+ document.querySelectorAll('.card').forEach(el=>el.addEventListener('click',()=>{state.selected=+el.dataset.index;render();}));
+ let chosen=state.selected===null?null:getCard(state.hand[state.selected]);document.getElementById('play').disabled=!chosen||state.done||chosen.cost>state.energy;
+ document.getElementById('end').disabled=state.done;
+}
+function slotHTML(side,lane){let list=state[side][lane];if(!list.length)return `<div class="slot"><span class="empty">${side==='cpu'?'Avversario':'La tua arena'}</span></div>`;return list.map(c=>`<div class="slot filled"><div class="mon"><img src="${art(c.dex)}" alt="${c.name}"><b>${c.name}</b><small>${power(c,side,lane)} potenza</small></div></div>`).join('')}
+function playSelected(lane){if(state.selected===null||state.done)return;let id=state.hand[state.selected],c=getCard(id);if(c.cost>state.energy){say('Non hai energia sufficiente.');return}
+ if(c.evolves&&!state.player[lane].some(x=>x.id===c.evolves)){say(`Per giocare ${c.name} serve ${getCard(c.evolves).name} nella stessa arena.`);return}
+ state.player[lane].push(c);state.energy-=c.cost;state.hand.splice(state.selected,1);state.selected=null;
+ if(c.id==='charmander'&&!state.hand.includes('charmeleon'))state.hand.push('charmeleon');
+ if(c.id==='charmeleon'&&!state.hand.includes('charizard'))state.hand.push('charizard');
+ say(c.id==='charmander'?'Charmander giocato: hai sbloccato Charmeleon!':c.id==='charmeleon'?'Charmeleon giocato: hai sbloccato Charizard!':`${c.name} entra in ${arenasData[lane].name}!`);render();}
+function cpuTurn(){let options=[];for(let id of ['charmander','charmeleon','charizard']){let c=getCard(id);if(c.cost>state.turn)continue;for(let lane=0;lane<3;lane++){if(c.evolves&&!state.cpu[lane].some(x=>x.id===c.evolves))continue;if(state.cpu[lane].length<2)options.push({c,lane});}}
+ options.sort((a,b)=>{let da=score('player',a.lane)-score('cpu',a.lane),db=score('player',b.lane)-score('cpu',b.lane);return db-da+(Math.random()-.5)*3});let budget=state.turn;let played=0;for(let o of options){if(o.c.cost<=budget&&state.cpu[o.lane].length<2){state.cpu[o.lane].push(o.c);budget-=o.c.cost;played++;}}
+ return played}
+function endTurn(){if(state.done)return;let n=cpuTurn();if(state.turn===6){finish();return}state.turn++;state.energy=Math.min(6,state.turn);state.selected=null;
+ if(state.hand.length<3){state.hand.push('charmander');}
+ say(n?`L’avversario ha giocato ${n} carta/e. Tocca a te!`:'L’avversario non ha potuto giocare. Tocca a te!');render();}
+function finish(){state.done=true;let wins=0,loss=0;for(let i=0;i<3;i++){if(score('player',i)>score('cpu',i))wins++;else if(score('player',i)<score('cpu',i))loss++;}let won=wins>=2;document.getElementById('resultTitle').textContent=won?'Vittoria!':'Partita conclusa';document.getElementById('resultText').textContent=`Hai conquistato ${wins} arene su 3. ${won?'Hai dominato Kanto!':'Riprova: cambia strategia e scegli meglio dove evolvere.'}`;document.getElementById('overlay').style.display='flex';say('Partita terminata.');render();}
+document.getElementById('play').addEventListener('click',()=>{say('Tocca una delle tre arene per giocare la carta.');});
+document.getElementById('end').addEventListener('click',endTurn);document.getElementById('restart').addEventListener('click',newGame);
+newGame();
+</script>
+</body>
+</html>
