@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1220"><title>Kanto Clash · Kanto 151</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--panel2:#202d43;--line:#354862;--gold:#ffd16a;--muted:#aab7ca;--red:#ff8585;--blue:#7bcaff;--green:#82e5b0}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:#f5f7fc;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{height:100dvh;max-width:1100px;margin:auto;padding:clamp(4px,.8vh,10px);display:flex;flex-direction:column;gap:clamp(3px,.55vh,7px);min-height:0}
+header,.stats,.status,.handtop,.actions{display:flex;align-items:center;justify-content:space-between;gap:5px;flex:none}.brand{font-weight:950;letter-spacing:.1em;font-size:clamp(14px,3vw,22px);white-space:nowrap}.brand span{color:var(--gold)}.stats{gap:4px}.pill{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 7px;color:var(--muted);font-size:9px;font-weight:850;white-space:nowrap}.pill strong{color:white;font-size:12px;margin-left:3px}
+#dexBtn{border:1px solid #6d5b37;background:#332b1d;color:var(--gold);border-radius:8px;padding:6px 8px;font-size:9px;font-weight:900;white-space:nowrap}
+.status h1{font-size:clamp(12px,2.3vw,17px);margin:0}.status p{font-size:9px;color:var(--muted);margin:2px 0 0}.status #message{font-size:9px;color:var(--gold);text-align:right;max-width:48%;line-height:1.2}
+.arenas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;flex:1;min-height:0}.arena{border:1px solid var(--line);background:linear-gradient(160deg,#1b2940,#111b2b);border-radius:12px;padding:4px;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;overflow:hidden}.arena.winner{border-color:var(--green);box-shadow:inset 0 0 0 1px #82e5b055}.arena h2{font-size:clamp(9px,1.9vw,13px);margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.desc{font-size:7px;color:var(--muted);line-height:1.1;min-height:12px}.score{display:flex;justify-content:space-between;align-items:center;margin:2px 0;font-weight:950;font-size:clamp(14px,3vw,21px)}.score small{font-size:8px;color:var(--muted)}
+.sides{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0}.side{display:flex;flex-direction:column;flex:1;min-height:0;border-radius:8px;padding:2px;gap:2px}.side.cpu{background:linear-gradient(180deg,#3b202d88,#281c2a55);border:1px solid #9e4c60}.side.player{background:linear-gradient(180deg,#183b5888,#172c4555);border:1px solid #4389b8}.side-head{display:flex;align-items:center;justify-content:space-between;font-size:7px;font-weight:950;letter-spacing:.04em;padding:2px 3px;border-radius:4px}.cpu .side-head{background:#542c3b;color:#ffb5b5}.player .side-head{background:#1c4567;color:#b3e2ff}.slot-list{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0}.slot{background:#0d1726aa;border:1px dashed #50617a;border-radius:5px;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:1px;overflow:hidden}.cpu .slot.filled{border:1px solid #b65d70;background:linear-gradient(145deg,#4a2838,#2a2030)}.player .slot.filled{border:1px solid #559dcc;background:linear-gradient(145deg,#214968,#202d43)}.mon{display:flex;align-items:center;gap:2px;width:100%;min-width:0;height:100%;justify-content:center}.mon img{width:clamp(20px,4.8vw,38px);height:clamp(20px,4.8vw,38px);object-fit:contain;filter:drop-shadow(0 2px 4px #0008);flex:none}.mon-info{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:1px}.mon b{font-size:clamp(6px,1.35vw,9px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.mon small{font-size:6px;line-height:1.1;color:var(--gold);text-align:left}.mon em{font-style:normal;font-size:5.5px;color:#d5dfef;line-height:1.05;text-align:left}.empty{font-size:7px;color:#8190a7}
+.bottom{display:flex;flex-direction:column;gap:3px;flex:none}.handtop{font-size:9px;color:var(--muted)}.legend{display:flex;gap:7px;font-size:8px;font-weight:850}.legend .you{color:var(--blue)}.legend .them{color:var(--red)}.hand{display:flex;gap:5px;overflow-x:auto;overflow-y:hidden;min-height:0;scrollbar-width:thin;padding-bottom:1px}.card{background:linear-gradient(155deg,#263851,#19273b);border:1px solid #49617e;border-radius:9px;padding:3px;min-width:clamp(94px,28vw,125px);max-width:140px;flex:1 0 0;display:flex;flex-direction:column;align-items:center;gap:1px;position:relative;overflow:hidden;min-height:clamp(73px,12vh,106px);color:white}.card:disabled{opacity:.4}.card.selected{border:2px solid var(--gold);background:#3b3540;box-shadow:0 0 0 1px #ffd16a55}.card img{width:clamp(29px,7vw,48px);height:clamp(29px,7vw,48px);object-fit:contain}.card b{font-size:clamp(8px,1.8vw,11px)}.card small{font-size:6.5px;color:#c5d1e2;text-align:center;line-height:1.1}.card .ability{color:var(--gold);font-weight:850}.types{font-size:6px;color:#9edaff;font-weight:900}.cost{position:absolute;top:3px;left:3px;background:#4b91cb;border-radius:50%;width:16px;height:16px;display:grid;place-items:center;font-size:9px;font-weight:950}
+.actions button{border:0;border-radius:8px;padding:8px;font-weight:900;font-size:10px}#end{background:#354762;color:white;flex:1}#restart{background:transparent;border:1px solid var(--line);color:var(--muted);padding-inline:12px}button:disabled{opacity:.35}#hint{font-size:7px;color:#8290a6;text-align:center}
+.overlay{position:fixed;inset:0;background:#070b13e8;display:none;align-items:center;justify-content:center;padding:14px;z-index:5}.dialog{max-width:420px;width:100%;max-height:90dvh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center}.dialog h2{margin:0 0 8px}.dialog p{color:var(--muted);font-size:13px;line-height:1.45}.dialog button{background:var(--gold);border:0;border-radius:10px;padding:10px 18px;font-weight:900}.dex-tools{display:flex;gap:6px;margin:8px 0}.dex-tools input{min-width:0;flex:1;background:#0d1726;border:1px solid var(--line);border-radius:8px;padding:9px;color:white}.dex-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;text-align:left}.dex-card{background:#202d43;border:1px solid #354862;border-radius:8px;padding:6px;display:flex;gap:6px;align-items:center;min-width:0}.dex-card img{width:38px;height:38px;object-fit:contain}.dex-card b{font-size:10px}.dex-card small{display:block;font-size:7px;color:#b8c5d8;line-height:1.25}.close-row{display:flex;justify-content:flex-end;margin-top:8px}.tag{display:inline-block;border-radius:20px;padding:2px 5px;background:#30435b;color:#dcecff;font-size:6px;margin-right:2px}
+@media(max-height:650px){#app{gap:2px;padding:3px}.arena{padding:2px}.desc{min-height:9px}.card{min-height:65px}.card img{height:26px;width:26px}.mon img{height:19px;width:19px}.bottom{gap:2px}.actions button{padding:6px}.side-head{padding:1px}.side{padding:1px;gap:1px}.mon em{display:none}}
+@media(min-width:700px){#app{padding:12px}.arena{padding:8px}.card{min-height:120px}.card img{width:64px;height:64px}.mon img{width:44px;height:44px}.mon b{font-size:10px}.mon small{font-size:8px}.mon em{font-size:7px}.dex-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style></head><body>
+<div id="app"><header><div class="brand">KANTO <span>CLASH</span></div><button id="dexBtn">POKÉDEX 151</button><div class="stats"><div class="pill">TURNO<strong id="turn">1/6</strong></div><div class="pill">ENERGIA<strong id="energy">1</strong></div></div></header>
+<div class="status"><div><h1>Conquista le arene</h1><p>3 Pokémon per squadra · 6 turni · vinci 2 arene su 3.</p></div><div id="message">Scegli una carta e un’arena.</div></div>
+<main class="arenas" id="arenas"></main>
+<section class="bottom"><div class="handtop"><span>LA TUA MANO</span><span class="legend"><span class="you">● TU</span><span class="them">● CPU</span></span><span><strong id="handcount">3</strong> carte</span></div><div class="hand" id="hand"></div><div class="actions"><button id="end">Fine turno</button><button id="restart" aria-label="Nuova partita">↻ Nuova</button></div><div id="hint">Tocca una carta e poi la tua metà blu dell'arena. Le evoluzioni richiedono lo stadio precedente.</div></section></div>
+<div class="overlay" id="overlay"><div class="dialog"><h2 id="resultTitle"></h2><p id="resultText"></p><button onclick="newGame()">Nuova partita</button></div></div>
+<div class="overlay" id="dexOverlay"><div class="dialog"><h2>Pokédex di Kanto</h2><p>Tutti i 151 Pokémon sono nel gioco. Le evoluzioni si sbloccano giocando lo stadio precedente.</p><div class="dex-tools"><input id="dexSearch" placeholder="Cerca Pokémon o tipo..."></div><div class="dex-grid" id="dexGrid"></div><div class="close-row"><button id="closeDex">Chiudi</button></div></div></div>
+<script>
+const raw = `1|Bulbasaur|Erba Veleno|0
+2|Ivysaur|Erba Veleno|1
+3|Venusaur|Erba Veleno|2
+4|Charmander|Fuoco|0
+5|Charmeleon|Fuoco|4
+6|Charizard|Fuoco Volante|5
+7|Squirtle|Acqua|0
+8|Wartortle|Acqua|7
+9|Blastoise|Acqua|8
+10|Caterpie|Coleottero|0
+11|Metapod|Coleottero|10
+12|Butterfree|Coleottero Volante|11
+13|Weedle|Coleottero Veleno|0
+14|Kakuna|Coleottero Veleno|13
+15|Beedrill|Coleottero Veleno|14
+16|Pidgey|Normale Volante|0
+17|Pidgeotto|Normale Volante|16
+18|Pidgeot|Normale Volante|17
+19|Rattata|Normale|0
+20|Raticate|Normale|19
+21|Spearow|Normale Volante|0
+22|Fearow|Normale Volante|21
+23|Ekans|Veleno|0
+24|Arbok|Veleno|23
+25|Pikachu|Elettro|0
+26|Raichu|Elettro|25
+27|Sandshrew|Terra|0
+28|Sandslash|Terra|27
+29|Nidoran♀|Veleno|0
+30|Nidorina|Veleno|29
+31|Nidoqueen|Veleno Terra|30
+32|Nidoran♂|Veleno|0
+33|Nidorino|Veleno|32
+34|Nidoking|Veleno Terra|33
+35|Clefairy|Folletto|0
+36|Clefable|Folletto|35
+37|Vulpix|Fuoco|0
+38|Ninetales|Fuoco|37
+39|Jigglypuff|Normale Folletto|0
+40|Wigglytuff|Normale Folletto|39
+41|Zubat|Veleno Volante|0
+42|Golbat|Veleno Volante|41
+43|Oddish|Erba Veleno|0
+44|Gloom|Erba Veleno|43
+45|Vileplume|Erba Veleno|44
+46|Paras|Coleottero Erba|0
+47|Parasect|Coleottero Erba|46
+48|Venonat|Coleottero Veleno|0
+49|Venomoth|Coleottero Veleno|48
+50|Diglett|Terra|0
+51|Dugtrio|Terra|50
+52|Meowth|Normale|0
+53|Persian|Normale|52
+54|Psyduck|Acqua|0
+55|Golduck|Acqua|54
+56|Mankey|Lotta|0
+57|Primeape|Lotta|56
+58|Growlithe|Fuoco|0
+59|Arcanine|Fuoco|58
+60|Poliwag|Acqua|0
+61|Poliwhirl|Acqua|60
+62|Poliwrath|Acqua Lotta|61
+63|Abra|Psico|0
+64|Kadabra|Psico|63
+65|Alakazam|Psico|64
+66|Machop|Lotta|0
+67|Machoke|Lotta|66
+68|Machamp|Lotta|67
+69|Bellsprout|Erba Veleno|0
+70|Weepinbell|Erba Veleno|69
+71|Victreebel|Erba Veleno|70
+72|Tentacool|Acqua Veleno|0
+73|Tentacruel|Acqua Veleno|72
+74|Geodude|Roccia Terra|0
+75|Graveler|Roccia Terra|74
+76|Golem|Roccia Terra|75
+77|Ponyta|Fuoco|0
+78|Rapidash|Fuoco|77
+79|Slowpoke|Acqua Psico|0
+80|Slowbro|Acqua Psico|79
+81|Magnemite|Elettro Acciaio|0
+82|Magneton|Elettro Acciaio|81
+83|Farfetch'd|Normale Volante|0
+84|Doduo|Normale Volante|0
+85|Dodrio|Normale Volante|84
+86|Seel|Acqua|0
+87|Dewgong|Acqua Ghiaccio|86
+88|Grimer|Veleno|0
+89|Muk|Veleno|88
+90|Shellder|Acqua|0
+91|Cloyster|Acqua Ghiaccio|90
+92|Gastly|Spettro Veleno|0
+93|Haunter|Spettro Veleno|92
+94|Gengar|Spettro Veleno|93
+95|Onix|Roccia Terra|0
+96|Drowzee|Psico|0
+97|Hypno|Psico|96
+98|Krabby|Acqua|0
+99|Kingler|Acqua|98
+100|Voltorb|Elettro|0
+101|Electrode|Elettro|100
+102|Exeggcute|Erba Psico|0
+103|Exeggutor|Erba Psico|102
+104|Cubone|Terra|0
+105|Marowak|Terra|104
+106|Hitmonlee|Lotta|0
+107|Hitmonchan|Lotta|0
+108|Lickitung|Normale|0
+109|Koffing|Veleno|0
+110|Weezing|Veleno|109
+111|Rhyhorn|Terra Roccia|0
+112|Rhydon|Terra Roccia|111
+113|Chansey|Normale|0
+114|Tangela|Erba|0
+115|Kangaskhan|Normale|0
+116|Horsea|Acqua|0
+117|Seadra|Acqua|116
+118|Goldeen|Acqua|0
+119|Seaking|Acqua|118
+120|Staryu|Acqua|0
+121|Starmie|Acqua Psico|120
+122|Mr. Mime|Psico Folletto|0
+123|Scyther|Coleottero Volante|0
+124|Jynx|Ghiaccio Psico|0
+125|Electabuzz|Elettro|0
+126|Magmar|Fuoco|0
+127|Pinsir|Coleottero|0
+128|Tauros|Normale|0
+129|Magikarp|Acqua|0
+130|Gyarados|Acqua Volante|129
+131|Lapras|Acqua Ghiaccio|0
+132|Ditto|Normale|0
+133|Eevee|Normale|0
+134|Vaporeon|Acqua|133
+135|Jolteon|Elettro|133
+136|Flareon|Fuoco|133
+137|Porygon|Normale|0
+138|Omanyte|Roccia Acqua|0
+139|Omastar|Roccia Acqua|138
+140|Kabuto|Roccia Acqua|0
+141|Kabutops|Roccia Acqua|140
+142|Aerodactyl|Roccia Volante|0
+143|Snorlax|Normale|0
+144|Articuno|Ghiaccio Volante|0
+145|Zapdos|Elettro Volante|0
+146|Moltres|Fuoco Volante|0
+147|Dratini|Drago|0
+148|Dragonair|Drago|147
+149|Dragonite|Drago Volante|148
+150|Mewtwo|Psico|0
+151|Mew|Psico|0`;
+const TYPE_LABEL={Normale:'NOR',Fuoco:'FUC',Acqua:'ACQ',Elettro:'ELE',Erba:'ERB',Ghiaccio:'GHI',Lotta:'LOT',Veleno:'VEL',Terra:'TER',Volante:'VOL',Psico:'PSI',Coleottero:'COL',Roccia:'ROC',Spettro:'SPE',Drago:'DRA',Buio:'BUI',Acciaio:'ACC',Folletto:'FOL'};
+const TYPE_COLOR={Normale:'#aaa',Fuoco:'#ff875b',Acqua:'#63baff',Elettro:'#ffe06a',Erba:'#78d58c',Ghiaccio:'#9ce9e5',Lotta:'#f18b78',Veleno:'#c38bd7',Terra:'#d8b477',Volante:'#a9b9ec',Psico:'#f28bb5',Coleottero:'#b5cf70',Roccia:'#c4b58c',Spettro:'#9b8bd1',Drago:'#8b9dff',Buio:'#9b91a2',Acciaio:'#aab8c9',Folletto:'#f3a6d2'};
+const prefix={Normale:'Istinto',Fuoco:'Fiammata',Acqua:'Marea',Elettro:'Scarica',Erba:'Radice',Ghiaccio:'Gelo',Lotta:'Impatto',Veleno:'Tossina',Terra:'Terremoto',Volante:'Vortice',Psico:'Concentrazione',Coleottero:'Sciame',Roccia:'Corazza',Spettro:'Ombra',Drago:'Ruggito',Buio:'Inganno',Acciaio:'Armatura',Folletto:'Incanto'};
+const typeEffect={
+Normale:'Legame: +1 potenza per ogni alleato nella stessa arena (massimo +2).',Fuoco:'Fiamma: +2 se hai già un alleato Fuoco nella stessa arena.',Acqua:'Corrente: +2 contro Fuoco, Roccia o Terra.',Elettro:'Scarica: +2 contro Acqua o Volante.',Erba:'Radici: +2 se hai già un alleato nella stessa arena.',Ghiaccio:'Brina: +2 contro Erba, Terra, Volante o Drago.',Lotta:'Impatto: +2 contro Normale, Roccia, Ghiaccio o Acciaio.',Veleno:'Velenotocco: +2 contro Erba o Folletto.',Terra:'Faglia: +2 contro Elettro, Fuoco, Roccia o Veleno.',Volante:'Raffica: +2 contro Erba, Lotta o Coleottero.',Psico:'Focus: +2 dal quarto turno in poi.',Coleottero:'Sciame: +2 se hai già un alleato Coleottero.',Roccia:'Frantumazione: +2 contro Fuoco, Ghiaccio, Volante o Coleottero.',Spettro:'Fase eterea: +2 contro Psico o Spettro.',Drago:'Aura draconica: +3 contro i Pokémon Drago.',Buio:'Agguato: +2 se l’arena è in svantaggio.',Acciaio:'Armatura: +1 se hai già un alleato Acciaio.',Folletto:'Incanto: +2 contro Drago, Lotta o Buio.'};
+const typeChart={
+Normale:{Roccia:.5,Spettro:0,Acciaio:.5},Fuoco:{Fuoco:.5,Acqua:.5,Erba:2,Ghiaccio:2,Coleottero:2,Roccia:.5,Drago:.5,Acciaio:2},
+Acqua:{Fuoco:2,Acqua:.5,Erba:.5,Terra:2,Roccia:2,Drago:.5},Elettro:{Acqua:2,Elettro:.5,Erba:.5,Terra:0,Volante:2,Drago:.5},
+Erba:{Fuoco:.5,Acqua:2,Erba:.5,Veleno:.5,Terra:2,Volante:.5,Coleottero:.5,Roccia:2,Drago:.5,Acciaio:.5},
+Ghiaccio:{Fuoco:.5,Acqua:.5,Erba:2,Ghiaccio:.5,Terra:2,Volante:2,Drago:2,Acciaio:.5},
+Lotta:{Normale:2,Ghiaccio:2,Veleno:.5,Volante:.5,Psico:.5,Coleottero:.5,Roccia:2,Spettro:0,Buio:2,Acciaio:2,Folletto:.5},
+Veleno:{Erba:2,Veleno:.5,Terra:.5,Roccia:.5,Spettro:.5,Acciaio:0,Folletto:2},
+Terra:{Fuoco:2,Elettro:2,Erba:.5,Veleno:2,Volante:0,Coleottero:.5,Roccia:2,Acciaio:2},
+Volante:{Erba:2,Elettro:.5,Lotta:2,Coleottero:2,Roccia:.5,Acciaio:.5},
+Psico:{Lotta:2,Veleno:2,Psico:.5,Acciaio:.5,Buio:0},
+Coleottero:{Fuoco:.5,Erba:2,Lotta:.5,Veleno:.5,Volante:.5,Psico:2,Spettro:.5,Buio:2,Acciaio:.5,Folletto:.5},
+Roccia:{Fuoco:2,Ghiaccio:2,Lotta:.5,Terra:.5,Volante:2,Coleottero:2,Acciaio:.5},
+Spettro:{Normale:0,Psico:2,Spettro:2,Buio:.5},
+Drago:{Drago:2,Acciaio:.5,Folletto:0},
+Buio:{Lotta:.5,Psico:2,Spettro:2,Buio:.5,Folletto:.5},
+Acciaio:{Fuoco:.5,Acqua:.5,Elettro:.5,Ghiaccio:2,Roccia:2,Acciaio:.5,Folletto:2},
+Folletto:{Fuoco:.5,Lotta:2,Veleno:.5,Drago:2,Buio:2,Acciaio:.5}
+};
+const rows=raw.trim().split('\n').map(line=>{let [dex,name,types,pre]=line.split('|');return {dex:+dex,id:'p'+dex,name,types:types.split(' '),pre:+pre||0,stage:1,power:0,cost:0}});
+const byDex=new Map(rows.map(x=>[x.dex,x]));
+rows.forEach(p=>{let parent=p.pre?byDex.get(p.pre):null;p.stage=parent?parent.stage+1:1;});
+const legends=new Set([144,145,146,150,151]);
+rows.forEach(p=>{
+ let n=p.dex;p.legendary=legends.has(n);
+ if(p.legendary){p.power=n===150?12:n===151?10:11;p.cost=5;}
+ else if(p.stage===3){p.power=7+(n%3);p.cost=5;}
+ else if(p.stage===2){p.power=4+(n%3);p.cost=3;}
+ else if(rows.some(x=>x.pre===n)){p.power=2+(n%3);p.cost=1;}
+ else {p.power=4+(n%4);p.cost=2+(n%3===0?1:0);}
+ if([113,131,143,142,130,149,103,68,65,76,112,115,127,128].includes(n))p.power+=1;
+ p.abilityName=`${prefix[p.types[0]]} di ${p.name}`;
+ p.ability=typeEffect[p.types[0]]||'Talento: +2 potenza quando entra in campo.';
+ p.signature=p.dex%6;
+ const signatureText=['Talento personale: +1 se è il primo Pokémon della tua arena.','Talento personale: +1 se hai un alleato di tipo diverso.','Talento personale: +1 se ci sono almeno 2 avversari nell’arena.','Talento personale: +1 dal quarto turno in poi.','Talento personale: +1 se hai un alleato dello stesso tipo.','Talento personale: +1 quando sei in svantaggio nell’arena.'];
+ if(!p.legendary)p.ability+=' '+signatureText[p.signature];
+ if(n===4){p.abilityName='Scintilla';p.ability='+1 potenza se è il primo nella tua arena.'}
+ if(n===5){p.abilityName='Brace';p.ability='+2 potenza se nella tua arena c’è Charmander.'}
+ if(n===6){p.abilityName='Incendio';p.ability='+3 con Charmeleon e -2 alla potenza di tutti i nemici nell’arena.'}
+ if(n===144){p.abilityName='Gelo Artico';p.ability='Congela il Pokémon avversario più forte: -3 potenza.'}
+ if(n===145){p.abilityName='Tuono Leggendario';p.ability='Paralizza il Pokémon avversario più forte: -3 potenza.'}
+ if(n===146){p.abilityName='Fiamma Celeste';p.ability='Brucia tutti i Pokémon avversari: -2 potenza ciascuno.'}
+ if(n===150){p.abilityName='Psicoschianto';p.ability='+4 potenza; ignora resistenze e riduce di 2 il nemico più forte.'}
+ if(n===151){p.abilityName='Mille Volti';p.ability='+3 potenza; copia il bonus più alto tra gli alleati nell’arena.'}
+ if(n===25){p.abilityName='Fulmine Rapido';p.ability='+2 contro Acqua e Volante; +1 se giochi al turno 1 o 2.'}
+ if(n===129){p.abilityName='Splash';p.ability='Se resta in campo con Gyarados, Gyarados ottiene +3 potenza.'}
+ if(n===130){p.abilityName='Ira Draconica';p.ability='+3 se Magikarp è nella stessa arena; +2 contro Erba e Lotta.'}
+ if(n===133){p.abilityName='Adattabilità';p.ability='+2 per ogni evoluzione di Eevee già schierata (massimo +4).'}
+ if(n===143){p.abilityName='Ronfoscatto';p.ability='+3 se è l’unico tuo Pokémon nell’arena.'}
+ if(n===131){p.abilityName='Canto Gelido';p.ability='Riduce di 2 la potenza del nemico più forte e ottiene +2 se hai un alleato Acqua.'}
+ if(n===132){p.abilityName='Trasformazione';p.ability='Ottiene +2 potenza per ogni tipo diverso nella tua squadra (massimo +4).'}
+});
+const art=n=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
+const $=id=>document.getElementById(id);let state;
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function basePool(){return rows.filter(p=>!p.pre).map(p=>p.id)}
+function getCard(id){return rows.find(p=>p.id===id)}
+function draw(side){let s=state[side];if(s.deck.length)s.hand.push(s.deck.shift())}
+function newGame(){
+ const pool=shuffle(basePool());state={turn:1,energy:1,selected:null,player:[[],[],[]],cpu:[[],[],[]],done:false,playerData:{deck:pool.slice(),hand:[],unlocked:new Set(),played:new Set()},cpuData:{deck:shuffle(basePool()),hand:[],unlocked:new Set(),played:new Set()}};
+ for(let i=0;i<3;i++){draw('playerData');draw('cpuData')};$('overlay').style.display='none';say('Partita iniziata: scegli una carta e un’arena.');render();
+}
+function say(t){$('message').textContent=t}
+function typeMult(attack,defenderTypes){let m=1;for(const d of defenderTypes)m*=((typeChart[attack]||{})[d]??1);return m}
+function matchup(c,enemy){if(!enemy.length)return 0;let total=0;for(const e of enemy){let mult=typeMult(c.types[0],e.types);total+=mult===0?-2:mult>=2?2:mult<1?-1:0}return total/enemy.length}
+function abilityBonus(c,side,lane){let team=state[side][lane],enemy=state[side==='player'?'cpu':'player'][lane],turn=state.turn;let b=0;const has=t=>team.some(x=>x.types.includes(t));
+ switch(c.types[0]){
+ case 'Normale':b=Math.min(2,team.length);break;
+ case 'Fuoco':if(has('Fuoco'))b+=2;break;
+ case 'Acqua':if(enemy.some(x=>x.types.some(t=>['Fuoco','Roccia','Terra'].includes(t))))b+=2;break;
+ case 'Elettro':if(enemy.some(x=>x.types.some(t=>['Acqua','Volante'].includes(t))))b+=2;break;
+ case 'Erba':if(team.length)b+=2;break;
+ case 'Ghiaccio':if(enemy.some(x=>x.types.some(t=>['Erba','Terra','Volante','Drago'].includes(t))))b+=2;break;
+ case 'Lotta':if(enemy.some(x=>x.types.some(t=>['Normale','Roccia','Ghiaccio','Acciaio'].includes(t))))b+=2;break;
+ case 'Veleno':if(enemy.some(x=>x.types.some(t=>['Erba','Folletto'].includes(t))))b+=2;break;
+ case 'Terra':if(enemy.some(x=>x.types.some(t=>['Elettro','Fuoco','Roccia','Veleno'].includes(t))))b+=2;break;
+ case 'Volante':if(enemy.some(x=>x.types.some(t=>['Erba','Lotta','Coleottero'].includes(t))))b+=2;break;
+ case 'Psico':if(turn>=4)b+=2;break;
+ case 'Coleottero':if(has('Coleottero'))b+=2;break;
+ case 'Roccia':if(enemy.some(x=>x.types.some(t=>['Fuoco','Ghiaccio','Volante','Coleottero'].includes(t))))b+=2;break;
+ case 'Spettro':if(enemy.some(x=>x.types.some(t=>['Psico','Spettro'].includes(t))))b+=2;break;
+ case 'Drago':if(enemy.some(x=>x.types.includes('Drago')))b+=3;break;
+ case 'Buio':if(team.reduce((a,x)=>a+x.power,0)<enemy.reduce((a,x)=>a+x.power,0))b+=2;break;
+ case 'Acciaio':if(has('Acciaio'))b+=1;break;
+ case 'Folletto':if(enemy.some(x=>x.types.some(t=>['Drago','Lotta','Buio'].includes(t))))b+=2;break;
+ }
+ if(!c.legendary){
+  if(c.signature===0&&team.length===0)b+=1;
+  if(c.signature===1&&team.some(x=>x.types[0]!==c.types[0]))b+=1;
+  if(c.signature===2&&enemy.length>=2)b+=1;
+  if(c.signature===3&&turn>=4)b+=1;
+  if(c.signature===4&&has(c.types[0]))b+=1;
+  if(c.signature===5&&team.reduce((a,x)=>a+x.power,0)<enemy.reduce((a,x)=>a+x.power,0))b+=1;
+ }
+ if(c.dex===4&&team.length===0)b+=1;
+ if(c.dex===5&&team.some(x=>x.dex===4))b+=2;
+ if(c.dex===6&&team.some(x=>x.dex===5))b+=3;
+ if(c.dex===25&&turn<=2)b+=1;
+ if(c.dex===130&&team.some(x=>x.dex===129))b+=3;
+ if(c.dex===133)b+=Math.min(4,team.filter(x=>[134,135,136].includes(x.dex)).length*2);
+ if(c.dex===143&&team.length===0)b+=3;
+ if(c.dex===131&&has('Acqua'))b+=2;
+ if(c.dex===132)b+=Math.min(4,new Set(team.flatMap(x=>x.types)).size);
+ if(c.dex===151)b+=Math.max(0,...team.map(x=>Math.max(0,x.power-c.power)));
+ return b;
+}
+function power(c,side,lane){let team=state[side][lane],enemy=state[side==='player'?'cpu':'player'][lane];let typeBonus=matchup(c,enemy);if(c.dex===150)typeBonus=Math.max(0,typeBonus);let p=c.power+abilityBonus(c,side,lane)+typeBonus;if(c.dex===150)p+=4;if(c.dex===144||c.dex===145||c.dex===146)p+=3;if(c.dex===6){};
+ if(c.types[0]==='Veleno'&&enemy.length)p-=0;
+ if(side==='cpu'&&state.player[lane].some(x=>x.dex===6))p-=2;
+ if(side==='player'&&state.cpu[lane].some(x=>x.dex===6))p-=2;
+ if(c.weakened)p-=2;return Math.max(0,p)}
+function score(side,lane){let team=state[side][lane],enemy=state[side==='player'?'cpu':'player'][lane];let total=team.reduce((s,c)=>s+power(c,side,lane),0);
+ // Effetti dei leggendari e delle abilità di controllo
+ if(enemy.some(x=>x.dex===144))total-=Math.min(3,total>0?3:0);
+ if(enemy.some(x=>x.dex===145))total-=Math.min(3,total>0?3:0);
+ if(enemy.some(x=>x.dex===146))total-=Math.min(2*team.length,total);
+ if(enemy.some(x=>x.dex===150))total-=Math.min(2,total);
+ return Math.max(0,total)}
+function unlockEvolutions(side,c,lane){let s=state[side+'Data'];let next=rows.filter(x=>x.pre===c.dex);for(const evo of next){if(!s.played.has(evo.id)&&!s.hand.includes(evo.id)&&!s.unlocked.has(evo.id)){s.hand.push(evo.id);s.unlocked.add(evo.id)}}}
+function canPlay(c,side,lane){let team=state[side][lane];if(team.length>=3)return false;if(c.pre&&!team.some(x=>x.dex===c.pre))return false;return true}
+function playSelected(lane){if(state.done||state.selected===null)return;let s=state.playerData,id=s.hand[state.selected],c=getCard(id);if(!c)return;if(c.cost>state.energy){say('Energia insufficiente: scegli una carta meno costosa.');return}if(!canPlay(c,'player',lane)){say(c.pre?'Per giocare questa evoluzione serve lo stadio precedente nella stessa arena.':'Questa arena ha già 3 Pokémon per squadra.');return}
+ let card={...c};state.player[lane].push(card);s.hand.splice(state.selected,1);s.played.add(id);state.energy-=c.cost;state.selected=null;unlockEvolutions('player',c,lane);
+ let note=c.dex===144?' Gelo Artico: il nemico più forte viene congelato.':c.dex===145?' Tuono Leggendario: il nemico più forte viene paralizzato.':c.dex===146?' Fiamma Celeste: tutti i nemici vengono bruciati.':c.dex===150?' Psicoschianto: potere psichico devastante.':c.dex===151?' Mille Volti: Mew si adatta alla squadra.':c.pre?' Evoluzione schierata!':' Hai sbloccato le eventuali evoluzioni!';
+ let typeAdv=matchup(card,state.cpu[lane]);let typeNote=typeAdv>=1?' Vantaggio di tipo!':typeAdv<=-1?' Attenzione: il tipo avversario resiste o è immune.':'';let exposed=state.cpu[lane].some(e=>typeMult(e.types[0],card.types)>=2);if(exposed)typeNote+=' Il tuo Pokémon è anche esposto a una debolezza avversaria.';say(`${c.name} in ${['Prato Smeraldo','Grotta Rocciosa','Vetta Vulcanica'][lane]}.${note}${typeNote}`);render();}
+function cpuTurn(){let s=state.cpuData;draw('cpuData');let budget=state.turn,played=0;
+ for(let k=0;k<3;k++){let opts=[];for(let lane=0;lane<3;lane++){if(state.cpu[lane].length>=3)continue;for(const id of s.hand){let c=getCard(id);if(c.cost<=budget&&canPlay(c,'cpu',lane)){let gap=score('player',lane)-score('cpu',lane);let value=c.power+abilityBonus(c,'cpu',lane)+matchup(c,state.player[lane])+(gap>0?2:0)+(c.pre?2:0)+(state.cpu[lane].length===0?1:0);opts.push({id,c,lane,value:value/Math.max(1,c.cost*.72)})}}}
+ opts.sort((a,b)=>b.value-a.value);let pick=opts[0];if(!pick)break;let card={...pick.c};state.cpu[pick.lane].push(card);s.hand.splice(s.hand.indexOf(pick.id),1);s.played.add(pick.id);budget-=pick.c.cost;unlockEvolutions('cpu',pick.c,pick.lane);played++;
+ }
+ return played;
+}
+function endTurn(){if(state.done)return;let n=cpuTurn();if(state.turn===6){finish();return}state.turn++;state.energy=state.turn;draw('playerData');state.selected=null;say(n?`La CPU ha schierato ${n} Pokémon. Tocca a te!`:'La CPU passa. Tocca a te!');render()}
+function finish(){state.done=true;let wins=0,ties=0;for(let i=0;i<3;i++){let a=score('player',i),b=score('cpu',i);if(a>b)wins++;else if(a===b)ties++}let won=wins>=2;let title=won?'Vittoria!':'Partita conclusa';$('resultTitle').textContent=title;$('resultText').textContent=`Hai conquistato ${wins} arene${ties?` e pareggiato ${ties}`:''} su 3. ${won?'Hai dominato Kanto!':'Riprova: sfrutta tipi, evoluzioni e abilità per controllare due arene.'}`;$('overlay').style.display='flex';say('Partita terminata.');render()}
+function cardTypes(c){return c.types.map(t=>`<span class="tag" style="border:1px solid ${TYPE_COLOR[t]};color:${TYPE_COLOR[t]}">${t}</span>`).join('')}
+function monHTML(c,side,lane){let p=power(c,side,lane);return `<div class="mon"><img src="${art(c.dex)}" alt="${c.name}" loading="lazy"><div class="mon-info"><b>${c.name}</b><small>${p} POT.</small><em>${c.types.map(t=>TYPE_LABEL[t]).join('/')}</em></div></div>`}
+function slotHTML(side,lane){let list=state[side][lane];if(!list.length)return `<div class="slot"><span class="empty">${side==='cpu'?'In attesa CPU':'Posizione libera'}</span></div>`;return list.map(c=>`<div class="slot filled">${monHTML(c,side,lane)}</div>`).join('')}
+function render(){
+ $('turn').textContent=state.turn+'/6';$('energy').textContent=state.energy;$('handcount').textContent=state.playerData.hand.length;
+ $('arenas').innerHTML=['Prato Smeraldo','Grotta Rocciosa','Vetta Vulcanica'].map((name,i)=>{let ps=score('player',i),cs=score('cpu',i);return `<section class="arena ${ps>cs?'winner':''}" data-lane="${i}"><h2>${name}</h2><div class="desc">${['Natura e crescita','Roccia e resistenza','Calore e coraggio'][i]}</div><div class="score"><span style="color:var(--blue)">${ps}</span><small>TU / CPU</small><span style="color:var(--red)">${cs}</span></div><div class="sides"><div class="side cpu"><div class="side-head"><span>AVVERSARIO</span><span>ROSSO · ${state.cpu[i].length}/3</span></div><div class="slot-list">${slotHTML('cpu',i)}</div></div><div class="side player"><div class="side-head"><span>LA TUA SQUADRA</span><span>BLU · ${state.player[i].length}/3</span></div><div class="slot-list">${slotHTML('player',i)}</div></div></div></section>`}).join('');
+ document.querySelectorAll('.arena').forEach(el=>el.addEventListener('click',()=>playSelected(+el.dataset.lane)));
+ $('hand').innerHTML=state.playerData.hand.map((id,i)=>{let c=getCard(id);if(!c)return '';return `<button class="card ${state.selected===i?'selected':''}" data-index="${i}" ${state.done?'disabled':''}><span class="cost">${c.cost}</span><img src="${art(c.dex)}" alt="${c.name}" loading="lazy"><b>${c.name}</b><span class="types">${c.types.join(' / ')}</span><small>${c.power} base · ${c.stage===1?'Base':c.stage===2?'Evoluzione':'Stadio finale'}</small><small class="ability">${c.abilityName}: ${c.ability}</small></button>`}).join('');
+ document.querySelectorAll('.card').forEach(el=>el.addEventListener('click',()=>{state.selected=+el.dataset.index;let c=getCard(state.playerData.hand[state.selected]);say(`${c.name} · costo ${c.cost}. Scegli un’arena blu.`);render()}));$('end').disabled=state.done;
+}
+function defenseSummary(p){let names=Object.keys(typeChart);let weak=names.filter(t=>typeMult(t,p.types)>=2);let resist=names.filter(t=>{let m=typeMult(t,p.types);return m>0&&m<1});let immune=names.filter(t=>typeMult(t,p.types)===0);return `Debole: ${weak.join(', ')||'—'} · Resiste: ${resist.join(', ')||'—'} · Immune: ${immune.join(', ')||'—'}`}
+function renderDex(filter=''){let q=filter.toLowerCase().trim();$('dexGrid').innerHTML=rows.filter(p=>!q||p.name.toLowerCase().includes(q)||p.types.join(' ').toLowerCase().includes(q)||p.abilityName.toLowerCase().includes(q)).map(p=>`<div class="dex-card"><img src="${art(p.dex)}" loading="lazy"><div><b>#${p.dex} ${p.name}</b><small>${p.types.join(' / ')} · Pot. ${p.power} · Costo ${p.cost}</small><small>${p.abilityName}: ${p.ability}</small><small>${defenseSummary(p)}</small></div></div>`).join('')||'<p>Nessun Pokémon trovato.</p>'}
+$('dexBtn').addEventListener('click',()=>{$('dexOverlay').style.display='flex';$('dexSearch').value='';renderDex()});$('closeDex').addEventListener('click',()=>$('dexOverlay').style.display='none');$('dexSearch').addEventListener('input',e=>renderDex(e.target.value));$('dexOverlay').addEventListener('click',e=>{if(e.target===$('dexOverlay'))$('dexOverlay').style.display='none'});
+$('end').addEventListener('click',endTurn);$('restart').addEventListener('click',newGame);newGame();
+</script></body></html>
