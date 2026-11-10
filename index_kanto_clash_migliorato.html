@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101522">
+<title>Kanto Clash</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1421;--panel:#172235;--panel2:#202e45;--line:#344762;--gold:#ffd16a;--muted:#a8b5c9;--red:#ff8585;--blue:#79caff;--green:#82e5b0}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:#f5f7fc;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{height:100dvh;max-width:1100px;margin:auto;padding:clamp(6px,1.2vh,13px);display:flex;flex-direction:column;gap:clamp(4px,.8vh,9px);min-height:0}
+header,.status,.handtop,.actions{display:flex;align-items:center;justify-content:space-between;gap:7px;flex:none}
+.brand{font-weight:950;letter-spacing:.1em;font-size:clamp(14px,3vw,22px)}.brand span{color:var(--gold)}
+.stats{display:flex;gap:5px}.pill{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 9px;color:var(--muted);font-size:10px;font-weight:800}.pill strong{color:white;font-size:12px;margin-left:3px}
+.status h1{font-size:clamp(12px,2.3vw,17px);margin:0}.status p{font-size:9px;color:var(--muted);margin:2px 0 0}.status #message{font-size:10px;color:var(--gold);text-align:right;max-width:48%;line-height:1.2}
+.arenas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;flex:1;min-height:0}
+.arena{border:1px solid var(--line);background:linear-gradient(160deg,#1d2a40,#131d2d);border-radius:13px;padding:6px;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;overflow:hidden}
+.arena.winner{border-color:var(--green);box-shadow:inset 0 0 0 1px #82e5b055}.arena h2{font-size:clamp(9px,1.9vw,13px);margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.desc{font-size:8px;color:var(--muted);line-height:1.15;min-height:17px}
+.score{display:flex;justify-content:space-between;align-items:center;margin:4px 0;font-weight:950;font-size:clamp(14px,3vw,21px)}.score small{font-size:8px;color:var(--muted)}
+.slots{display:flex;flex-direction:column;gap:5px;flex:1;min-height:0}
+.side-label{font-size:8px;font-weight:900;letter-spacing:.07em;text-align:center;padding:3px;border-radius:5px;margin-bottom:2px}
+.side-label.cpu{background:#492b37;color:#ffb0b0}.side-label.player{background:#173b58;color:#a6ddff}
+.slot{background:#101a2a;border:1px dashed #455771;border-radius:8px;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:3px;overflow:hidden}
+.slot.filled.cpu-slot{border:1px solid #a34f61;background:linear-gradient(145deg,#3a2534,#222031)}
+.slot.filled.player-slot{border:1px solid #4389b8;background:linear-gradient(145deg,#203d59,#202a40)}
+.mon{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;min-width:0}.mon img{width:clamp(30px,7vw,58px);height:clamp(30px,7vw,58px);object-fit:contain;filter:drop-shadow(0 2px 4px #0008)}
+.mon b{font-size:clamp(8px,1.6vw,11px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.mon small{font-size:8px;line-height:1.1;color:var(--gold)}.mon em{font-style:normal;font-size:7px;color:#d5dfef;line-height:1.1}
+.empty{font-size:8px;color:#77869e}
+.bottom{display:flex;flex-direction:column;gap:5px;flex:none}.handtop{font-size:10px;color:var(--muted)}.handtop strong{color:#fff}
+.hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;min-height:0}
+.card{background:linear-gradient(155deg,#263851,#19273b);border:1px solid #49617e;border-radius:11px;padding:4px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;position:relative;overflow:hidden;min-height:clamp(91px,15vh,133px);color:white}
+.card:disabled{opacity:.4}.card.selected{border:2px solid var(--gold);background:#3b3540;box-shadow:0 0 0 1px #ffd16a55}
+.card img{width:clamp(39px,9vw,70px);height:clamp(39px,9vw,70px);object-fit:contain}.card b{font-size:clamp(9px,1.8vw,12px)}
+.card small{font-size:8px;color:#c5d1e2;text-align:center;line-height:1.12}.cost{position:absolute;top:4px;left:4px;background:#4b91cb;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;font-weight:950}
+.ability{color:var(--gold)!important;font-weight:800}
+.actions button{border:0;border-radius:9px;padding:10px 9px;font-weight:900;font-size:11px}
+#play{background:var(--gold);color:#20202a;flex:1}#end{background:#354762;color:white;flex:1}#restart{background:transparent;border:1px solid var(--line);color:var(--muted);padding-inline:13px}
+button:disabled{opacity:.35}
+#hint{font-size:8px;color:#8290a6;text-align:center}
+.overlay{position:fixed;inset:0;background:#070b13e8;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}.dialog{max-width:360px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center}.dialog h2{margin:0 0 8px}.dialog p{color:var(--muted);font-size:13px;line-height:1.45}.dialog button{background:var(--gold);border:0;border-radius:10px;padding:12px 20px;font-weight:900}
+@media(max-height:650px){#app{gap:4px;padding:5px}.arena{padding:4px}.desc{min-height:13px}.card{min-height:78px}.card img{height:35px;width:35px}.mon img{height:28px;width:28px}.bottom{gap:3px}.actions button{padding:8px}.side-label{padding:2px}}
+@media(min-width:700px){#app{padding:14px}.arena{padding:11px}.slot{min-height:85px}.card{min-height:145px}.card img{width:85px;height:85px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div class="brand">KANTO <span>CLASH</span></div><div class="stats"><div class="pill">TURNO<strong id="turn">1/6</strong></div><div class="pill">ENERGIA<strong id="energy">1</strong></div></div></header>
+<div class="status"><div><h1>Conquista le arene</h1><p>Vinci almeno 2 arene su 3 entro il sesto turno.</p></div><div id="message">Scegli una carta dalla mano.</div></div>
+<main class="arenas" id="arenas"></main>
+<section class="bottom"><div class="handtop"><span>LA TUA MANO <span style="color:var(--blue)">● TU</span></span><span><strong id="handcount">3</strong> carte</span></div>
+<div class="hand" id="hand"></div>
+<div class="actions"><button id="play" disabled>Gioca carta</button><button id="end">Fine turno</button><button id="restart" aria-label="Nuova partita">↻</button></div><div id="hint">Seleziona una carta e poi tocca la tua metà dell’arena.</div></section>
+</div>
+<div class="overlay" id="overlay"><div class="dialog"><h2 id="resultTitle"></h2><p id="resultText"></p><button onclick="newGame()">Nuova partita</button></div></div>
+<script>
+const art=n=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
+const cards=[
+{id:'charmander',name:'Charmander',dex:4,cost:1,power:2,desc:'Fiamma nascente',ability:'Scintilla: +1 potenza se è il primo nella tua arena.',stage:1},
+{id:'charmeleon',name:'Charmeleon',dex:5,cost:3,power:5,desc:'Artigli ardenti',ability:'Brace: +2 se nella tua arena c’è Charmander.',stage:2,evolves:'charmander'},
+{id:'charizard',name:'Charizard',dex:6,cost:5,power:9,desc:'Drago fiammeggiante',ability:'Incendio: +3 se nella tua arena c’è Charmeleon.',stage:3,evolves:'charmeleon'}
+];
+const arenasData=[{name:'Prato Smeraldo',desc:'La natura protegge i più deboli.'},{name:'Grotta Rocciosa',desc:'Qui conta la forza pura.'},{name:'Vetta Vulcanica',desc:'Il fuoco domina la vetta.'}];
+let state;
+function newGame(){state={turn:1,energy:1,selected:null,player:[[],[],[]],cpu:[[],[],[]],hand:['charmander','charmander','charmander'],done:false};document.getElementById('overlay').style.display='none';render();say('Scegli una carta e poi un’arena.')}
+function getCard(id){return cards.find(c=>c.id===id)}
+function power(c,side,lane){let p=c.power,team=state[side][lane];if(c.id==='charmander'&&team.length===0)p+=1;if(c.id==='charmeleon'&&team.some(x=>x.id==='charmander'))p+=2;if(c.id==='charizard'&&team.some(x=>x.id==='charmeleon'))p+=3;if(lane===2&&c.id.includes('char'))p+=1;return p}
+function score(side,lane){return state[side][lane].reduce((s,c)=>s+power(c,side,lane),0)}
+function say(t){document.getElementById('message').textContent=t}
+function monHTML(c,side,lane){let extra=c.id==='charmander'?'Scintilla':c.id==='charmeleon'?'Brace':'Incendio';return `<div class="mon"><img src="${art(c.dex)}" alt="${c.name}"><b>${c.name}</b><small>${power(c,side,lane)} POTENZA</small><em>${extra}</em></div>`}
+function slotHTML(side,lane){let list=state[side][lane],cls=side==='cpu'?'cpu-slot':'player-slot';if(!list.length)return `<div class="slot"><span class="empty">${side==='cpu'?'In attesa CPU':'Tocca per giocare'}</span></div>`;return list.map(c=>`<div class="slot filled ${cls}">${monHTML(c,side,lane)}</div>`).join('')}
+function render(){
+ document.getElementById('turn').textContent=state.turn+'/6';document.getElementById('energy').textContent=state.energy;document.getElementById('handcount').textContent=state.hand.length;
+ document.getElementById('arenas').innerHTML=arenasData.map((a,i)=>{let ps=score('player',i),cs=score('cpu',i);return `<section class="arena ${ps>cs?'winner':''}" data-lane="${i}"><h2>${a.name}</h2><div class="desc">${a.desc}</div><div class="score"><span style="color:var(--blue)">${ps}</span><small>TU  /  CPU</small><span style="color:var(--red)">${cs}</span></div><div class="slots"><div class="side-label cpu">AVVERSARIO · ROSSO</div>${slotHTML('cpu',i)}<div class="side-label player">TU · BLU</div>${slotHTML('player',i)}</div></section>`}).join('');
+ document.querySelectorAll('.arena').forEach(el=>el.addEventListener('click',()=>playSelected(+el.dataset.lane)));
+ document.getElementById('hand').innerHTML=state.hand.map((id,i)=>{let c=getCard(id);return `<button class="card ${state.selected===i?'selected':''}" data-index="${i}" ${state.done?'disabled':''}><span class="cost">${c.cost}</span><img src="${art(c.dex)}" alt="${c.name}"><b>${c.name}</b><small>${c.power} base · ${c.desc}</small><small class="ability">${c.ability}</small></button>`}).join('');
+ document.querySelectorAll('.card').forEach(el=>el.addEventListener('click',()=>{state.selected=+el.dataset.index;render();}));
+ let chosen=state.selected===null?null:getCard(state.hand[state.selected]);document.getElementById('play').disabled=!chosen||state.done||chosen.cost>state.energy;
+ document.getElementById('end').disabled=state.done;
+}
+function playSelected(lane){if(state.selected===null||state.done)return;let id=state.hand[state.selected],c=getCard(id);if(c.cost>state.energy){say('Energia insufficiente: attendi il prossimo turno.');return}
+ if(c.evolves&&!state.player[lane].some(x=>x.id===c.evolves)){say(`${c.name} richiede ${getCard(c.evolves).name} nella stessa arena.`);return}
+ if(state.player[lane].length>=2){say('La tua arena è piena: massimo 2 Pokémon.');return}
+ state.player[lane].push(c);state.energy-=c.cost;state.hand.splice(state.selected,1);state.selected=null;
+ if(c.id==='charmander'&&!state.hand.includes('charmeleon'))state.hand.push('charmeleon');
+ if(c.id==='charmeleon'&&!state.hand.includes('charizard'))state.hand.push('charizard');
+ say(c.id==='charmander'?'Charmander attiva Scintilla: Charmeleon è sbloccato!':c.id==='charmeleon'?'Brace attiva: Charizard è sbloccato!':`Charizard scatena Incendio in ${arenasData[lane].name}!`);render()}
+function cpuTurn(){let budget=state.turn,played=0;for(let lane=0;lane<3;lane++){if(state.cpu[lane].length>=2)continue;let candidates=['charmander','charmeleon','charizard'].map(getCard).filter(c=>c.cost<=budget&&(!c.evolves||state.cpu[lane].some(x=>x.id===c.evolves)));candidates.sort((a,b)=>b.power-a.power);let c=candidates[0];if(c){state.cpu[lane].push(c);budget-=c.cost;played++;}}
+ return played}
+function endTurn(){if(state.done)return;let n=cpuTurn();if(state.turn===6){finish();return}state.turn++;state.energy=Math.min(6,state.turn);state.selected=null;if(state.hand.length<3)state.hand.push('charmander');say(n?`La CPU ha giocato ${n} Pokémon. Tocca a te!`:'La CPU passa. Tocca a te!');render()}
+function finish(){state.done=true;let wins=0;for(let i=0;i<3;i++)if(score('player',i)>score('cpu',i))wins++;let won=wins>=2;document.getElementById('resultTitle').textContent=won?'Vittoria!':'Partita conclusa';document.getElementById('resultText').textContent=`Hai conquistato ${wins} arene su 3. ${won?'Hai dominato Kanto!':'Riprova: pianifica meglio le evoluzioni e distribuisci i Pokémon.'}`;document.getElementById('overlay').style.display='flex';say('Partita terminata.');render()}
+document.getElementById('play').addEventListener('click',()=>say('Ora tocca la tua arena blu per giocare la carta selezionata.'));document.getElementById('end').addEventListener('click',endTurn);document.getElementById('restart').addEventListener('click',newGame);newGame();
+</script>
+</body></html>
