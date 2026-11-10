@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Kanto Clash</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--panel2:#202d43;--line:#354862;--gold:#ffd16a;--muted:#aab7ca;--red:#ff8585;--blue:#7bcaff;--green:#82e5b0}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:#f5f7fc;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{height:100dvh;max-width:1100px;margin:auto;padding:clamp(5px,1vh,12px);display:flex;flex-direction:column;gap:clamp(4px,.7vh,8px);min-height:0}
+header,.stats,.status,.handtop,.actions{display:flex;align-items:center;justify-content:space-between;gap:6px;flex:none}
+.brand{font-weight:950;letter-spacing:.1em;font-size:clamp(14px,3vw,22px)}.brand span{color:var(--gold)}
+.stats{gap:4px}.pill{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 8px;color:var(--muted);font-size:9px;font-weight:850;white-space:nowrap}.pill strong{color:white;font-size:12px;margin-left:3px}
+.status h1{font-size:clamp(12px,2.3vw,17px);margin:0}.status p{font-size:9px;color:var(--muted);margin:2px 0 0}.status #message{font-size:9px;color:var(--gold);text-align:right;max-width:48%;line-height:1.2}
+.arenas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;flex:1;min-height:0}
+.arena{border:1px solid var(--line);background:linear-gradient(160deg,#1b2940,#111b2b);border-radius:12px;padding:5px;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;overflow:hidden}
+.arena.winner{border-color:var(--green);box-shadow:inset 0 0 0 1px #82e5b055}
+.arena h2{font-size:clamp(9px,1.9vw,13px);margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desc{font-size:7px;color:var(--muted);line-height:1.1;min-height:14px}
+.score{display:flex;justify-content:space-between;align-items:center;margin:3px 0;font-weight:950;font-size:clamp(14px,3vw,21px)}.score small{font-size:8px;color:var(--muted)}
+.sides{display:flex;flex-direction:column;gap:4px;flex:1;min-height:0}
+.side{display:flex;flex-direction:column;flex:1;min-height:0;border-radius:8px;padding:3px;gap:3px}
+.side.cpu{background:linear-gradient(180deg,#3b202d88,#281c2a55);border:1px solid #9e4c60}
+.side.player{background:linear-gradient(180deg,#183b5888,#172c4555);border:1px solid #4389b8}
+.side-head{display:flex;align-items:center;justify-content:space-between;font-size:7px;font-weight:950;letter-spacing:.05em;padding:2px 3px;border-radius:4px}
+.cpu .side-head{background:#542c3b;color:#ffb5b5}.player .side-head{background:#1c4567;color:#b3e2ff}
+.side-head span:last-child{opacity:.85}
+.slot-list{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0}
+.slot{background:#0d1726aa;border:1px dashed #50617a;border-radius:6px;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:2px;overflow:hidden}
+.cpu .slot.filled{border:1px solid #b65d70;background:linear-gradient(145deg,#4a2838,#2a2030)}
+.player .slot.filled{border:1px solid #559dcc;background:linear-gradient(145deg,#214968,#202d43)}
+.mon{display:flex;align-items:center;gap:3px;width:100%;min-width:0;height:100%;justify-content:center}
+.mon img{width:clamp(25px,5.7vw,46px);height:clamp(25px,5.7vw,46px);object-fit:contain;filter:drop-shadow(0 2px 4px #0008);flex:none}
+.mon-info{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:1px}
+.mon b{font-size:clamp(7px,1.5vw,10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mon small{font-size:7px;line-height:1.1;color:var(--gold);text-align:left}
+.mon em{font-style:normal;font-size:6px;color:#d5dfef;line-height:1.1;text-align:left}
+.empty{font-size:7px;color:#8190a7}
+.bottom{display:flex;flex-direction:column;gap:4px;flex:none}
+.handtop{font-size:9px;color:var(--muted)}.handtop strong{color:#fff}
+.legend{display:flex;gap:8px;font-size:8px;font-weight:850}.legend .you{color:var(--blue)}.legend .them{color:var(--red)}
+.hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;min-height:0}
+.card{background:linear-gradient(155deg,#263851,#19273b);border:1px solid #49617e;border-radius:10px;padding:3px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;position:relative;overflow:hidden;min-height:clamp(83px,14vh,125px);color:white}
+.card:disabled{opacity:.4}.card.selected{border:2px solid var(--gold);background:#3b3540;box-shadow:0 0 0 1px #ffd16a55}
+.card img{width:clamp(34px,8vw,62px);height:clamp(34px,8vw,62px);object-fit:contain}
+.card b{font-size:clamp(8px,1.8vw,12px)}
+.card small{font-size:7px;color:#c5d1e2;text-align:center;line-height:1.1}
+.card .ability{color:var(--gold);font-weight:850}
+.cost{position:absolute;top:3px;left:3px;background:#4b91cb;border-radius:50%;width:17px;height:17px;display:grid;place-items:center;font-size:9px;font-weight:950}
+.actions button{border:0;border-radius:9px;padding:9px 8px;font-weight:900;font-size:10px}
+#play{background:var(--gold);color:#20202a;flex:1}#end{background:#354762;color:white;flex:1}#restart{background:transparent;border:1px solid var(--line);color:var(--muted);padding-inline:12px}
+button:disabled{opacity:.35}#hint{font-size:7px;color:#8290a6;text-align:center}
+.overlay{position:fixed;inset:0;background:#070b13e8;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}
+.dialog{max-width:360px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center}
+.dialog h2{margin:0 0 8px}.dialog p{color:var(--muted);font-size:13px;line-height:1.45}.dialog button{background:var(--gold);border:0;border-radius:10px;padding:12px 20px;font-weight:900}
+@media(max-height:650px){#app{gap:3px;padding:4px}.arena{padding:3px}.desc{min-height:11px}.card{min-height:72px}.card img{height:30px;width:30px}.mon img{height:24px;width:24px}.bottom{gap:3px}.actions button{padding:7px}.side-head{padding:1px}.side{padding:2px;gap:2px}}
+@media(min-width:700px){#app{padding:14px}.arena{padding:10px}.card{min-height:135px}.card img{width:78px;height:78px}.mon img{width:50px;height:50px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div class="brand">KANTO <span>CLASH</span></div><div class="stats"><div class="pill">TURNO<strong id="turn">1/6</strong></div><div class="pill">ENERGIA<strong id="energy">1</strong></div></div></header>
+<div class="status"><div><h1>Conquista le arene</h1><p>Vinci almeno 2 arene su 3 entro il sesto turno.</p></div><div id="message">Scegli una carta dalla mano.</div></div>
+<main class="arenas" id="arenas"></main>
+<section class="bottom">
+<div class="handtop"><span>LA TUA MANO</span><span class="legend"><span class="you">● TU</span><span class="them">● CPU</span></span><span><strong id="handcount">3</strong> carte</span></div>
+<div class="hand" id="hand"></div>
+<div class="actions"><button id="play" disabled>Gioca carta</button><button id="end">Fine turno</button><button id="restart" aria-label="Nuova partita">↻</button></div>
+<div id="hint">Seleziona una carta, poi premi “Gioca carta” e scegli un’arena.</div>
+</section>
+</div>
+<div class="overlay" id="overlay"><div class="dialog"><h2 id="resultTitle"></h2><p id="resultText"></p><button onclick="newGame()">Nuova partita</button></div></div>
+<script>
+const art=n=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
+const cards=[
+{id:'charmander',name:'Charmander',dex:4,cost:1,power:2,desc:'Fiamma nascente',ability:'Scintilla: +1 se è il primo nella tua arena.',stage:1},
+{id:'charmeleon',name:'Charmeleon',dex:5,cost:3,power:5,desc:'Artigli ardenti',ability:'Brace: +2 con Charmander nella stessa arena.',stage:2,evolves:'charmander'},
+{id:'charizard',name:'Charizard',dex:6,cost:5,power:9,desc:'Drago fiammeggiante',ability:'Incendio: +3 con Charmeleon; indebolisce il nemico.',stage:3,evolves:'charmeleon'}
+];
+const arenasData=[
+{name:'Prato Smeraldo',desc:'I Pokémon più agili brillano.'},
+{name:'Grotta Rocciosa',desc:'Qui conta la forza pura.'},
+{name:'Vetta Vulcanica',desc:'Il fuoco guadagna potenza.'}
+];
+let state;
+function newGame(){state={turn:1,energy:1,selected:null,player:[[],[],[]],cpu:[[],[],[]],hand:['charmander','charmander','charmander'],done:false,log:''};document.getElementById('overlay').style.display='none';render();say('Scegli una carta e poi un’arena.')}
+function getCard(id){return cards.find(c=>c.id===id)}
+function power(c,side,lane){
+ let p=c.power,team=state[side][lane];
+ if(c.id==='charmander'&&team[0]===c)p+=1;
+ if(c.id==='charmeleon'&&team.some(x=>x.id==='charmander'))p+=2;
+ if(c.id==='charizard'&&team.some(x=>x.id==='charmeleon'))p+=3;
+ if(lane===2&&c.id.includes('char'))p+=1;
+ if(side==='cpu'&&state.player[lane].some(x=>x.id==='charizard'))p-=2;
+ return Math.max(0,p);
+}
+function score(side,lane){return state[side][lane].reduce((s,c)=>s+power(c,side,lane),0)}
+function say(t){document.getElementById('message').textContent=t}
+function monHTML(c,side,lane){let p=power(c,side,lane);let extra=c.id==='charmander'?'SCINTILLA':c.id==='charmeleon'?'BRACE':'INCENDIO';return `<div class="mon"><img src="${art(c.dex)}" alt="${c.name}"><div class="mon-info"><b>${c.name}</b><small>${p} POT.</small><em>${extra}</em></div></div>`}
+function slotHTML(side,lane){
+ let list=state[side][lane],cls=side==='cpu'?'cpu':'player';
+ if(!list.length)return `<div class="slot"><span class="empty">${side==='cpu'?'In attesa avversario':'Tua posizione libera'}</span></div>`;
+ return list.map(c=>`<div class="slot filled">${monHTML(c,side,lane)}</div>`).join('');
+}
+function render(){
+ document.getElementById('turn').textContent=state.turn+'/6';
+ document.getElementById('energy').textContent=state.energy;
+ document.getElementById('handcount').textContent=state.hand.length;
+ document.getElementById('arenas').innerHTML=arenasData.map((a,i)=>{
+  let ps=score('player',i),cs=score('cpu',i);
+  return `<section class="arena ${ps>cs?'winner':''}" data-lane="${i}">
+   <h2>${a.name}</h2><div class="desc">${a.desc}</div>
+   <div class="score"><span style="color:var(--blue)">${ps}</span><small>TU / CPU</small><span style="color:var(--red)">${cs}</span></div>
+   <div class="sides">
+    <div class="side cpu"><div class="side-head"><span>AVVERSARIO</span><span>ROSSO · CPU</span></div><div class="slot-list">${slotHTML('cpu',i)}</div></div>
+    <div class="side player"><div class="side-head"><span>LA TUA SQUADRA</span><span>BLU · TU</span></div><div class="slot-list">${slotHTML('player',i)}</div></div>
+   </div></section>`;
+ }).join('');
+ document.querySelectorAll('.arena').forEach(el=>el.addEventListener('click',()=>{if(state.selected!==null)playSelected(+el.dataset.lane)}));
+ document.getElementById('hand').innerHTML=state.hand.map((id,i)=>{
+  let c=getCard(id);return `<button class="card ${state.selected===i?'selected':''}" data-index="${i}" ${state.done?'disabled':''}>
+   <span class="cost">${c.cost}</span><img src="${art(c.dex)}" alt="${c.name}"><b>${c.name}</b>
+   <small>${c.power} base · ${c.desc}</small><small class="ability">${c.ability}</small></button>`;
+ }).join('');
+ document.querySelectorAll('.card').forEach(el=>el.addEventListener('click',()=>{state.selected=+el.dataset.index;render();}));
+ let chosen=state.selected===null?null:getCard(state.hand[state.selected]);
+ document.getElementById('play').disabled=!chosen||state.done||chosen.cost>state.energy;
+ document.getElementById('end').disabled=state.done;
+}
+function playSelected(lane){
+ if(state.selected===null||state.done)return;
+ let id=state.hand[state.selected],c=getCard(id);
+ if(c.cost>state.energy){say('Energia insufficiente: attendi il prossimo turno.');return}
+ if(c.evolves&&!state.player[lane].some(x=>x.id===c.evolves)){say(`${c.name} richiede ${getCard(c.evolves).name} nella stessa arena.`);return}
+ if(state.player[lane].length>=2){say('La tua arena è piena: massimo 2 Pokémon.');return}
+ state.player[lane].push({...c});state.energy-=c.cost;state.hand.splice(state.selected,1);state.selected=null;
+ let feedback='';
+ if(c.id==='charmander'&&!state.hand.includes('charmeleon')){state.hand.push('charmeleon');feedback=' Charmeleon è stato sbloccato!';}
+ if(c.id==='charmeleon'&&!state.hand.includes('charizard')){state.hand.push('charizard');feedback=' Charizard è stato sbloccato!';}
+ if(c.id==='charizard'&&state.cpu[lane].length){state.cpu[lane].forEach(x=>x.weakened=true);feedback=' Il suo Incendio mette sotto pressione la squadra avversaria!';}
+ say(`${c.name} schierato in ${arenasData[lane].name}.${feedback}`);
+ render();
+}
+function cpuTurn(){
+ let budget=state.turn,played=0;
+ for(let n=0;n<2;n++){
+  let options=[];
+  for(let lane=0;lane<3;lane++){
+   if(state.cpu[lane].length>=2)continue;
+   let candidates=cards.filter(c=>c.cost<=budget&&(!c.evolves||state.cpu[lane].some(x=>x.id===c.evolves)));
+   for(let c of candidates){
+    let before=score('cpu',lane)-score('player',lane);
+    let value=c.power+(c.evolves?3:0)+(before<0?2:0)+(lane===2&&c.id.includes('char')?1:0);
+    options.push({c,lane,value});
+   }
+  }
+  options.sort((a,b)=>b.value-a.value);
+  let pick=options[0];if(!pick)break;
+  state.cpu[pick.lane].push({...pick.c});budget-=pick.c.cost;played++;
+ }
+ return played;
+}
+function endTurn(){
+ if(state.done)return;
+ let n=cpuTurn();
+ if(state.turn===6){finish();return}
+ state.turn++;state.energy=Math.min(6,state.turn);state.selected=null;
+ if(state.hand.length<3)state.hand.push('charmander');
+ say(n?`La CPU ha schierato ${n} Pokémon. Tocca a te!`:'La CPU passa. Tocca a te!');
+ render();
+}
+function finish(){
+ state.done=true;let wins=0;
+ for(let i=0;i<3;i++)if(score('player',i)>score('cpu',i))wins++;
+ let won=wins>=2;
+ document.getElementById('resultTitle').textContent=won?'Vittoria!':'Partita conclusa';
+ document.getElementById('resultText').textContent=`Hai conquistato ${wins} arene su 3. ${won?'Hai dominato Kanto!':'Riprova: distribuisci meglio le energie e prepara le evoluzioni.'}`;
+ document.getElementById('overlay').style.display='flex';say('Partita terminata.');render();
+}
+document.getElementById('play').addEventListener('click',()=>{if(state.selected!==null)say('Ora tocca una delle tre arene per schierare la carta blu.')});
+document.getElementById('end').addEventListener('click',endTurn);
+document.getElementById('restart').addEventListener('click',newGame);
+newGame();
+</script>
+</body></html>
